@@ -15,6 +15,6 @@ public class MessageX implements Message {
 
     @Override
     public String toString() {
-        return "[Prod"+this.producteur.identification()+" : \'"+this.message+"\']";
+        return "Prod"+this.producteur.identification()+"("+this.message+")";
     }
 }

@@ -11,11 +11,11 @@ import java.util.Queue;
 
 public class ProdCons implements Tampon {
     private Queue<Message> buffer;
-    private int bufferSizeMax;
+    private int bufferTailleMax;
 
-    public ProdCons (int tamponSizeMax) {
+    public ProdCons (int bufferTailleMax) {
         this.buffer = new LinkedList<Message>();
-        this.bufferSizeMax = tamponSizeMax;
+        this.bufferTailleMax = bufferTailleMax;
     }
 
     public Queue<Message> getTampon () {
@@ -32,7 +32,7 @@ public class ProdCons implements Tampon {
 
         this.buffer.add(message);
         System.out.println("Producteur "+producteur.identification()+" a produit le message : "+message.toString());
-        System.out.println("Tampon : "+this.buffer);
+        System.out.println("--> Buffer : "+this.buffer+"\n");
         notifyAll();
     }
 
@@ -45,20 +45,22 @@ public class ProdCons implements Tampon {
         }
 
         Message message_r = this.buffer.poll();
-        System.out.println("Consommateur "+consommateur.identification()+" a consommer le message : "+message_r.toString());
-        System.out.println("Tampon : "+this.buffer);
+        System.out.println("Consommateur "+consommateur.identification()+" a consommé le message : "+message_r.toString());
+        System.out.println("--> Buffer : "+this.buffer+"\n");
         notifyAll();
 
         return message_r;
     }
 
+    //Renvoi le nombre de message qu'il est possible de mettre dans le buffer
     @Override
     public int enAttente() {
-        return this.bufferSizeMax - this.buffer.size();
+        return this.bufferTailleMax - this.buffer.size();
     }
 
+    //Renvoi la taille actuelle du buffer (le nombre de message disponible)
     @Override
     public int taille() {
-        return this.bufferSizeMax;
+        return this.buffer.size();
     }
 }

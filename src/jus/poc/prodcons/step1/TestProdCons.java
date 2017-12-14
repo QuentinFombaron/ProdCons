@@ -32,7 +32,7 @@ public class TestProdCons extends Simulateur {
         } catch (Exception e) {
             e.getMessage();
         }
-        this.buffer = new ProdCons(12);
+        this.buffer = new ProdCons(this.nbBuffer);
         this.nbRandomMessage = new Aleatoire(this.nombreMoyenDeProduction, this.deviationNombreMoyenDeProduction);
 
     }
@@ -105,28 +105,6 @@ public class TestProdCons extends Simulateur {
         //Affichage des données importées du fichier option.xml
         PrintXML(this.XML_Values);
 
-
-        /*
-        ProdCons prodCons = new ProdCons(getXML_Value("nbBuffer"));
-
-        Producteur prod1 = new Producteur(1, observateur, getXML_Value("tempsMoyenProduction"),
-                getXML_Value("deviationTempsMoyenProduction"));
-
-        Consommateur cons1 = new Consommateur(2, observateur, getXML_Value("tempsMoyenConsommation"),
-                getXML_Value("deviationTempsMoyenConsommation"));
-        Consommateur cons2 = new Consommateur(2, observateur, getXML_Value("tempsMoyenConsommation"),
-                getXML_Value("deviationTempsMoyenConsommation"));
-
-
-        Message message1 = new MessageX(prod1, "Blabla");
-        Message message2 = new MessageX(prod1, "Blublu");
-
-        prodCons.put(prod1, message1);
-        prodCons.put(prod1, message2);
-        prodCons.get(cons1);
-        prodCons.get(cons2);
-        */
-
         // Création de nbProd Producteur(s)
         for (int i = 0; i < this.nbProd; i++) {
             int nbMessageAProduire = this.nbRandomMessage.next();
@@ -142,8 +120,6 @@ public class TestProdCons extends Simulateur {
             this.consommateurList.add(nConsommateur);
             nConsommateur.start();
         }
-
-
     }
 
     public static void main(String[] args){

@@ -32,23 +32,24 @@ public class Producteur  extends Acteur implements _Producteur {
 
 	@Override
 	public void run() {
-        while (this.nbProduit < this.nbMessageAProduire) {
+        while (this.nbProduit <= this.nbMessageAProduire) {
             Message newMessage = new MessageX(this);
-            int timer = this.consommationAlea.next();
+            int timer = this.consommationAlea.next() * 1000;
             try {
                 sleep(timer);
                 this.buffer.put(this, newMessage);
-                this.nbProduit++;
             } catch (Exception e) {
                 e.getMessage();
             }
+            this.nbProduit++;
         }
+        producteurList.remove(this);
+        System.out.println("*** Prod"+this.identification()+" a finit de produire ***\n");
     }
 
 	@Override
 	public int nombreDeMessages() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.nbProduit;
 	}
 
 }

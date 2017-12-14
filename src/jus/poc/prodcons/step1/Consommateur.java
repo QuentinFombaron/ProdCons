@@ -2,6 +2,7 @@ package jus.poc.prodcons.step1;
 
 import jus.poc.prodcons.*;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.util.LinkedList;
 
 public class Consommateur extends Acteur implements _Consommateur{
@@ -31,17 +32,20 @@ public class Consommateur extends Acteur implements _Consommateur{
 
     @Override
     public void run() {
-        while ((this.buffer.enAttente() != 0) || (!producteurList.isEmpty())) {
-            int timer = this.consommationAlea.next();
+        while ((this.buffer.taille() != 0) || (!this.producteurList.isEmpty())) {
+            //System.out.println("isEmpty -> "+this.producteurList.isEmpty());
+            //System.out.println("taille -> "+this.buffer.taille()+"\n");
+            int timer = this.consommationAlea.next() * 1000;
             try {
-                System.out.println(this.toString() + "  " + this.buffer.get(this).toString());
+                this.buffer.get(this);
                 sleep(timer);
-                this.nbConsome++;
             } catch (Exception e) {
                 e.getMessage();
                 e.printStackTrace();
             }
+            this.nbConsome++;
         }
+        System.exit(0);
     }
 
     @Override
