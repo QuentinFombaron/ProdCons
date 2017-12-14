@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../CII/TP2/downloader/downloader.iml" filepath="$PROJECT_DIR$/../../CII/TP2/downloader/downloader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jus.poc.prodcons.iml" filepath="$PROJECT_DIR$/jus.poc.prodcons.iml" />
+    </modules>
+  </component>
+</project>
