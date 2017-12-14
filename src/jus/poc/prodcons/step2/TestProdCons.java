@@ -1,4 +1,5 @@
-package jus.poc.prodcons.step1;
+package jus.poc.prodcons.step2;
+
 
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.Observateur;
@@ -65,7 +66,7 @@ public class TestProdCons extends Simulateur {
     }
 
     /*****************************************************************************************/
-
+	
 	private static void PrintXML(Map<String, Integer> XML_Values) {
         System.out.println("*** Contenu du fichier option.xml ***");
         for(Map.Entry<String, Integer> entry : XML_Values.entrySet()) {
@@ -75,15 +76,15 @@ public class TestProdCons extends Simulateur {
         }
 		System.out.println("*************************************\n");
 	}
-
+	
 	/**
 	* Retreave the parameters of the application.
-	* @param file the final name of the file containing the options.
+	* @param file the final name of the file containing the options. 
 	**/
-
+	
 	@SuppressWarnings("Duplicates")
     protected void init(String file) {
-		Properties properties = new Properties();
+		Properties properties = new Properties(); 
 		try {
 			properties.loadFromXML(ClassLoader.getSystemResourceAsStream(file));
 		} catch (Exception e) {
@@ -94,7 +95,7 @@ public class TestProdCons extends Simulateur {
 		Class<?> thisOne = getClass();
 		for(Map.Entry<Object,Object> entry : properties.entrySet()) {
 			key = (String)entry.getKey();
-			value = Integer.parseInt((String)entry.getValue());
+			value = Integer.parseInt((String)entry.getValue()); 
 			try {
 				thisOne.getDeclaredField(key).set(this,value);
 				//Ajout des données XML dans la Map XML_Values
@@ -102,7 +103,7 @@ public class TestProdCons extends Simulateur {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		} 
 	}
 
     @SuppressWarnings("Duplicates")

@@ -1,4 +1,5 @@
-package jus.poc.prodcons.step1;
+package jus.poc.prodcons.step3;
+
 
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.Observateur;

@@ -12,16 +12,35 @@ import java.util.Queue;
 public class ProdCons implements Tampon {
     private Queue<Message> buffer;
     private int bufferTailleMax;
+    private LinkedList<Producteur> producteurList;
 
-    public ProdCons (int bufferTailleMax) {
+    /**
+     * Constructeur de ProdCons
+     * @param bufferTailleMax Définit la taille du buffer
+     */
+
+    public ProdCons (int bufferTailleMax, LinkedList<Producteur> producteurList) {
         this.buffer = new LinkedList<Message>();
         this.bufferTailleMax = bufferTailleMax;
+        this.producteurList = producteurList;
     }
+
+    /**
+     * Getter du buffer
+     * @return La liste représentant le buffer
+     */
 
     public Queue<Message> getTampon () {
         return buffer;
     }
 
+    /**
+     * Ajouter un message dans le buffer
+     * @param producteur Objet du Producteur qui ajoute le message dans le buffer
+     * @param message Message a ajouter dans le buffer
+     **/
+
+    @SuppressWarnings("Duplicates")
     @Override
     public synchronized void put(_Producteur producteur, Message message) throws Exception, InterruptedException {
         while (this.enAttente() == 0) {
@@ -31,34 +50,50 @@ public class ProdCons implements Tampon {
         }
 
         this.buffer.add(message);
-        System.out.println("Producteur "+producteur.identification()+" a produit le message : "+message.toString());
+        System.out.println("Producteur "+producteur.identification()+" produit le message : "+message.toString());
         System.out.println("--> Buffer : "+this.buffer+"\n");
         notifyAll();
     }
 
+    /**
+     * Récupérer un message dans le buffer
+     * @param consommateur Objet du Consommateur qui récupère le message dans le buffer
+     **/
+
+    @SuppressWarnings("Duplicates")
     @Override
     public synchronized Message get(_Consommateur consommateur) throws Exception, InterruptedException {
-        while (this.buffer.isEmpty()) {
+        while (this.buffer.isEmpty() && !(producteurList.isEmpty())) {
             try {
                 wait();
             } catch (Exception ignored) {}
         }
 
         Message message_r = this.buffer.poll();
-        System.out.println("Consommateur "+consommateur.identification()+" a consommé le message : "+message_r.toString());
-        System.out.println("--> Buffer : "+this.buffer+"\n");
-        notifyAll();
+        try {
+            System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
+            System.out.println("--> Buffer : " + this.buffer + "\n");
+            notifyAll();
+        } catch (NullPointerException e) {
+            System.out.println("/!\\ Consommateur" + consommateur.identification() + " n'a pas pu obtenir de message malgré sa demande\n");
+        }
 
         return message_r;
     }
 
-    //Renvoi le nombre de message qu'il est possible de mettre dans le buffer
+    /**
+     * @return Le nombre de message qu'il est possible de mettre dans le buffer
+     */
+
     @Override
     public int enAttente() {
         return this.bufferTailleMax - this.buffer.size();
     }
 
-    //Renvoi la taille actuelle du buffer (le nombre de message disponible)
+    /**
+     * @return La taille actuelle du buffer (le nombre de message disponible)
+     */
+
     @Override
     public int taille() {
         return this.buffer.size();

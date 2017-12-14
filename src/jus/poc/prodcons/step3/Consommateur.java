@@ -1,4 +1,4 @@
-package jus.poc.prodcons.step1;
+package jus.poc.prodcons.step3;
 
 import jus.poc.prodcons.*;
 
