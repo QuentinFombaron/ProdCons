@@ -28,11 +28,11 @@ public class Consommateur extends Acteur implements _Consommateur{
             int timer = this.consommationAlea.next() * 1000;
             try {
                 System.out.println("Consommateur"+this.identification()+" demande un message\n");
-                this.buffer.get(this);
+                Message message_r = this.buffer.get(this);
+                this.observateur.consommationMessage(this, message_r, timer);
                 sleep(timer);
             } catch (Exception e) {
-                e.getMessage();
-                e.printStackTrace();
+                System.out.println("/!\\ Consommateur" + this.identification() + " n'a pas pu obtenir de message malgré sa demande\n");
             }
             this.nbConsome++;
         }

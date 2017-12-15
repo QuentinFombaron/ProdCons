@@ -31,8 +31,8 @@ public class Consommateur extends Acteur implements _Consommateur{
                 this.buffer.get(this);
                 sleep(timer);
             } catch (Exception e) {
-                e.getMessage();
-                e.printStackTrace();
+                System.out.println("/!\\ Consommateur" + this.identification() + " n'a pas pu obtenir de message malgré sa demande\n");
+
             }
             this.nbConsome++;
         }

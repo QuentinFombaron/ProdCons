@@ -87,13 +87,11 @@ public class ProdCons implements Tampon {
                 }
 
                 Message message_r = this.buffer.poll();
-                try {
-                    System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
-                    System.out.println("--> Buffer : " + this.buffer + "\n");
-                    notifyAll();
-                } catch (NullPointerException e) {
-                    System.out.println("/!\\ Consommateur" + consommateur.identification() + " n'a pas pu obtenir de message malgré sa demande\n");
-                }
+
+                System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
+                System.out.println("--> Buffer : " + this.buffer + "\n");
+                notifyAll();
+
                 return message_r;
             }
         } finally {

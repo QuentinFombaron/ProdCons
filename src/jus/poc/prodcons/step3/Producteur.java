@@ -29,7 +29,8 @@ public class Producteur  extends Acteur implements _Producteur {
             Message newMessage = new MessageX(this);
             int timer = this.consommationAlea.next() * 1000;
             try {
-                sleep(1000);
+                this.observateur.productionMessage(this, newMessage, timer);
+                sleep(timer);
                 this.buffer.put(this, newMessage);
             } catch (Exception e) {
                 e.getMessage();

@@ -1,19 +1,23 @@
-package jus.poc.prodcons.step3;
+package jus.poc.prodcons.step5;
 
 import jus.poc.prodcons.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ProdCons implements Tampon {
     private Queue<Message> buffer;
     private int bufferTailleMax;
-    private Semaphore semConsommateur;
-    private Semaphore semProducteur;
     private LinkedList<Producteur> producteurList;
     private Observateur observateur;
+
+    private Lock lock;
+    private Condition notFull;
+    private Condition notEmpty;
 
     /**
      * Constructeur de ProdCons
@@ -23,10 +27,12 @@ public class ProdCons implements Tampon {
     public ProdCons (int bufferTailleMax, LinkedList<Producteur> producteurList, Observateur observateur) {
         this.buffer = new LinkedList<Message>();
         this.bufferTailleMax = bufferTailleMax;
-        this.semConsommateur = new Semaphore(1, true);
-        this.semProducteur = new Semaphore(1, true);
         this.producteurList = producteurList;
         this.observateur = observateur;
+
+        this.lock = new ReentrantLock();
+        this.notFull  = lock.newCondition();
+        this.notEmpty = lock.newCondition();
     }
 
     /**
@@ -47,22 +53,19 @@ public class ProdCons implements Tampon {
     @SuppressWarnings("Duplicates")
     @Override
     public void put(_Producteur producteur, Message message) throws Exception, InterruptedException {
-        semProducteur.acquire();
-        synchronized (this) {
+        lock.lock();
+        try {
             while (this.enAttente() == 0) {
-                try {
-                    wait();
-                } catch (Exception ignored) {
-                }
+                notFull.await();
             }
-
             this.buffer.add(message);
             this.observateur.depotMessage(producteur, message);
             System.out.println("Producteur " + producteur.identification() + " produit le message : " + message.toString());
             System.out.println("--> Buffer : " + this.buffer + "\n");
-            notifyAll();
+            notEmpty.signalAll();
+        } finally {
+            lock.unlock();
         }
-        semProducteur.release();
     }
 
     /**
@@ -76,25 +79,19 @@ public class ProdCons implements Tampon {
     @SuppressWarnings("Duplicates")
     @Override
     public  Message get(_Consommateur consommateur) throws Exception, InterruptedException {
-        semConsommateur.acquire();
+        lock.lock();
         try {
-            synchronized (this) {
-                while (this.buffer.isEmpty() && !(producteurList.isEmpty())) {
-                    try {
-                        wait();
-                    } catch (Exception ignored) {
-                    }
-                }
-
-                Message message_r = this.buffer.poll();
-                this.observateur.retraitMessage(consommateur, message_r);
-                    System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
-                    System.out.println("--> Buffer : " + this.buffer + "\n");
-                    notifyAll();
-                return message_r;
+            while (this.buffer.isEmpty() && !(producteurList.isEmpty())) {
+                notEmpty.await();
             }
+            Message message_r = this.buffer.poll();
+            this.observateur.retraitMessage(consommateur, message_r);
+            System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
+            System.out.println("--> Buffer : " + this.buffer + "\n");
+            notFull.signalAll();
+            return message_r;
         } finally {
-            semConsommateur.release();
+            lock.unlock();
         }
     }
 

@@ -1,4 +1,4 @@
-package jus.poc.prodcons.step4;
+package jus.poc.prodcons.step6;
 
 import jus.poc.prodcons.*;
 
@@ -8,11 +8,10 @@ import java.util.concurrent.Semaphore;
 
 
 public class ProdCons implements Tampon {
-    private Queue<MessageX> buffer;
+    private Queue<Message> buffer;
     private int bufferTailleMax;
     private Semaphore semConsommateur;
     private Semaphore semProducteur;
-    private Semaphore semProducteurExemplaire;
     private LinkedList<Producteur> producteurList;
     private Observateur observateur;
 
@@ -22,11 +21,10 @@ public class ProdCons implements Tampon {
      */
 
     public ProdCons (int bufferTailleMax, LinkedList<Producteur> producteurList, Observateur observateur) {
-        this.buffer = new LinkedList<MessageX>();
+        this.buffer = new LinkedList<Message>();
         this.bufferTailleMax = bufferTailleMax;
         this.semConsommateur = new Semaphore(1, true);
         this.semProducteur = new Semaphore(1, true);
-        this.semProducteurExemplaire = new Semaphore(1);
         this.producteurList = producteurList;
         this.observateur = observateur;
     }
@@ -36,7 +34,7 @@ public class ProdCons implements Tampon {
      * @return La liste représentant le buffer
      */
 
-    public Queue<MessageX> getTampon () {
+    public Queue<Message> getTampon () {
         return buffer;
     }
 
@@ -57,24 +55,14 @@ public class ProdCons implements Tampon {
                 } catch (Exception ignored) {
                 }
             }
-            this.buffer.add((MessageX) message);
+
+            this.buffer.add(message);
             this.observateur.depotMessage(producteur, message);
             System.out.println("Producteur " + producteur.identification() + " produit le message : " + message.toString());
             System.out.println("--> Buffer : " + this.buffer + "\n");
             notifyAll();
         }
         semProducteur.release();
-
-        semProducteurExemplaire.acquire();
-        synchronized (this) {
-            while (((MessageX)message).getNbExemplaire() != 0) {
-                try {
-                    wait();
-                } catch (Exception ignored) {}
-                notifyAll();
-            }
-        }
-        semProducteurExemplaire.release();
     }
 
     /**
@@ -98,27 +86,14 @@ public class ProdCons implements Tampon {
                     }
                 }
 
-                MessageX message_r = this.buffer.peek();
-
-                if (message_r.getNbExemplaire() > 1) {
-                    message_r.setNbExemplaire((message_r.getNbExemplaire())-1);
+                Message message_r = this.buffer.poll();
+                this.observateur.retraitMessage(consommateur, message_r);
                     System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
                     System.out.println("--> Buffer : " + this.buffer + "\n");
                     notifyAll();
-                }
-                else {
-                    this.buffer.poll();
-                    this.observateur.retraitMessage(consommateur, message_r);
-                    message_r.setNbExemplaire(0);
-                    notifyAll();
-                    System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
-                    System.out.println("--> Buffer : " + this.buffer + "\n");
-                }
-
                 return message_r;
             }
-        }
-        finally {
+        } finally {
             semConsommateur.release();
         }
     }

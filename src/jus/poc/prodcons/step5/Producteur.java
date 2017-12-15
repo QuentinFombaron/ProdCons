@@ -1,4 +1,4 @@
-package jus.poc.prodcons.step2;
+package jus.poc.prodcons.step5;
 
 import jus.poc.prodcons.*;
 
@@ -29,6 +29,7 @@ public class Producteur  extends Acteur implements _Producteur {
             Message newMessage = new MessageX(this);
             int timer = this.consommationAlea.next() * 1000;
             try {
+                this.observateur.productionMessage(this, newMessage, timer);
                 sleep(timer);
                 this.buffer.put(this, newMessage);
             } catch (Exception e) {

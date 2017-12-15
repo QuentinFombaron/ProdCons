@@ -4,15 +4,15 @@
 <comment>
   Commentaires ici
 </comment>
-<entry key="nbProd">1</entry>
+<entry key="nbProd">5</entry>
 <entry key="nbCons">5</entry>
 <entry key="nbBuffer">5</entry>
-<entry key="tempsMoyenProduction">10</entry>
+<entry key="tempsMoyenProduction">1</entry>
 <entry key="deviationTempsMoyenProduction">0</entry>
-<entry key="tempsMoyenConsommation">2</entry>
+<entry key="tempsMoyenConsommation">1</entry>
 <entry key="deviationTempsMoyenConsommation">0</entry>
-<entry key="nombreMoyenDeProduction">15</entry>
+<entry key="nombreMoyenDeProduction">5</entry>
 <entry key="deviationNombreMoyenDeProduction">0</entry>
 <entry key="nombreMoyenNbExemplaire">5</entry>
-<entry key="deviationNombreMoyenNbExemplaire">3</entry>
+<entry key="deviationNombreMoyenNbExemplaire">0</entry>
 </properties>
