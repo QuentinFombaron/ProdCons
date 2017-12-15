@@ -13,20 +13,20 @@ public class ProdCons implements Tampon {
     private Semaphore semConsommateur;
     private Semaphore semProducteur;
     private LinkedList<Producteur> producteurList;
-    private Observateur observateur;
+    private NotreObservateur notreObservateur;
 
     /**
      * Constructeur de ProdCons
      * @param bufferTailleMax Définit la taille du buffer
      */
 
-    public ProdCons (int bufferTailleMax, LinkedList<Producteur> producteurList, Observateur observateur) {
+    public ProdCons (int bufferTailleMax, LinkedList<Producteur> producteurList, NotreObservateur notreObservateur) {
         this.buffer = new LinkedList<Message>();
         this.bufferTailleMax = bufferTailleMax;
         this.semConsommateur = new Semaphore(1, true);
         this.semProducteur = new Semaphore(1, true);
         this.producteurList = producteurList;
-        this.observateur = observateur;
+        this.notreObservateur = notreObservateur;
     }
 
     /**
@@ -55,9 +55,8 @@ public class ProdCons implements Tampon {
                 } catch (Exception ignored) {
                 }
             }
-
             this.buffer.add(message);
-            this.observateur.depotMessage(producteur, message);
+            this.notreObservateur.depotMessage(producteur, message);
             System.out.println("Producteur " + producteur.identification() + " produit le message : " + message.toString());
             System.out.println("--> Buffer : " + this.buffer + "\n");
             notifyAll();
@@ -87,7 +86,7 @@ public class ProdCons implements Tampon {
                 }
 
                 Message message_r = this.buffer.poll();
-                this.observateur.retraitMessage(consommateur, message_r);
+                this.notreObservateur.retraitMessage(consommateur, message_r);
                     System.out.println("Consommateur" + consommateur.identification() + " consomme le message : " + message_r.toString());
                     System.out.println("--> Buffer : " + this.buffer + "\n");
                     notifyAll();

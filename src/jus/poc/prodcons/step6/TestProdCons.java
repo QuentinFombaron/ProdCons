@@ -26,26 +26,29 @@ public class TestProdCons extends Simulateur {
     private LinkedList<Consommateur> consommateurList;
     private LinkedList<Producteur> producteurList;
 
+    private NotreObservateur notreObservateur;
+
     private ProdCons buffer;
 
     public TestProdCons(Observateur observateur) throws ControlException {
         super(observateur);
+        this.notreObservateur = new NotreObservateur();
         this.consommateurList = new LinkedList<Consommateur>();
         this.producteurList = new LinkedList<Producteur>();
 
         try {
-            //Lecture du fichier option.xml
+            /* Lecture du fichier option.xml */
             init("jus/poc/prodcons/options/option.xml");
-            observateur.init(this.nbProd, this.nbCons, this.nbBuffer);
+            notreObservateur.init(this.nbProd, this.nbCons, this.nbBuffer);
         } catch (Exception e) {
             e.getMessage();
         }
-        this.buffer = new ProdCons(this.nbBuffer, this.producteurList, this.observateur);
+        this.buffer = new ProdCons(this.nbBuffer, this.producteurList, this.notreObservateur);
 
 
         this.nbRandomMessage = new Aleatoire(this.nombreMoyenDeProduction, this.deviationNombreMoyenDeProduction);
 
-        //Affichage des données importées du fichier option.xml
+        /* Affichage des données importées du fichier option.xml */
         PrintXML(this.XML_Values);
     }
 
@@ -117,18 +120,18 @@ public class TestProdCons extends Simulateur {
         // Création de nbProd Producteur(s)
         for (int i = 0; i < this.nbProd; i++) {
             int nbMessageAProduire = this.nbRandomMessage.next();
-            Producteur nProducteur = new Producteur(1, this.observateur, this.tempsMoyenProduction,
+            Producteur nProducteur = new Producteur(1, this.observateur, this.notreObservateur, this.tempsMoyenProduction,
                     this.deviationTempsMoyenProduction, nbMessageAProduire, this.buffer, this.producteurList);
-            observateur.newProducteur(nProducteur);
+            notreObservateur.newProducteur(nProducteur);
             this.producteurList.add(nProducteur);
             nProducteur.start();
         }
 
         // Création de nbCons consommateur(s)
         for (int i = 0; i < this.nbCons; i++) {
-            Consommateur nConsommateur = new Consommateur(2, this.observateur, this.tempsMoyenConsommation,
+            Consommateur nConsommateur = new Consommateur(2, this.observateur, this.notreObservateur, this.tempsMoyenConsommation,
                     this.deviationTempsMoyenConsommation, this.buffer, this.producteurList);
-            this.observateur.newConsommateur(nConsommateur);
+            this.notreObservateur.newConsommateur(nConsommateur);
             this.consommateurList.add(nConsommateur);
             nConsommateur.start();
             //Attente de 10ms pour laisser le temps au processeur de créer dans l'ordre les Consommateurs

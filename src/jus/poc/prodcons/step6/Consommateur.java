@@ -9,11 +9,13 @@ public class Consommateur extends Acteur implements _Consommateur{
     private Aleatoire consommationAlea;
     private int nbConsome;
     private LinkedList<Producteur> producteurList;
+    private NotreObservateur notreObservateur;
 
-	//type d'un Consommateur = 2
-    protected Consommateur(int type, Observateur observateur, int moyenneTempsDeTraitement,
+	/* type d'un Consommateur = 2 */
+    protected Consommateur(int type, Observateur observateur, NotreObservateur notreObservateur, int moyenneTempsDeTraitement,
                            int deviationTempsDeTraitement, ProdCons buffer, LinkedList<Producteur> producteurList) throws ControlException {
         super(type, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+        this.notreObservateur = notreObservateur;
         this.buffer = buffer;
         this.consommationAlea = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
         this.nbConsome = 0;
@@ -29,7 +31,7 @@ public class Consommateur extends Acteur implements _Consommateur{
             try {
                 System.out.println("Consommateur"+this.identification()+" demande un message\n");
                 Message message_r = this.buffer.get(this);
-                this.observateur.consommationMessage(this, message_r, timer);
+                this.notreObservateur.consommationMessage(this, message_r, timer);
                 sleep(timer);
             } catch (Exception e) {
                 System.out.println("/!\\ Consommateur" + this.identification() + " n'a pas pu obtenir de message malgré sa demande\n");

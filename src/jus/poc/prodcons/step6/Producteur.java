@@ -10,11 +10,13 @@ public class Producteur  extends Acteur implements _Producteur {
     private int noProduit;
     private int nbMessageAProduire;
     private LinkedList<Producteur> producteurList;
+    private NotreObservateur notreObservateur;
 
-	// type d'un Producteur = 1
-	protected Producteur(int type, Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
+	/* type d'un Producteur = 1 */
+	protected Producteur(int type, Observateur observateur, NotreObservateur notreObservateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
                          int nbMessageAProduire, ProdCons buffer, LinkedList<Producteur> producteurList) throws ControlException {
 		super(type, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+		this.notreObservateur = notreObservateur;
 		this.nbMessageAProduire = nbMessageAProduire;
         this.buffer = buffer;
         this.consommationAlea = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
@@ -29,7 +31,7 @@ public class Producteur  extends Acteur implements _Producteur {
             Message newMessage = new MessageX(this);
             int timer = this.consommationAlea.next() * 1000;
             try {
-                this.observateur.productionMessage(this, newMessage, timer);
+                this.notreObservateur.productionMessage(this, newMessage, timer);
                 sleep(timer);
                 this.buffer.put(this, newMessage);
             } catch (Exception e) {
